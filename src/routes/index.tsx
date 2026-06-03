@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import heroGlobe from "@/assets/hero-globe.jpg";
 import { generateContract } from "@/lib/contract.functions";
+import { signInWithPi, getCachedPiUser } from "@/lib/pi-auth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,6 +34,34 @@ const DEFAULTS = {
 function Index() {
   const generate = useServerFn(generateContract);
   const [form, setForm] = useState(DEFAULTS);
+  const [piUser, setPiUser] = useState<{ uid: string; username: string } | null>(
+    null,
+  );
+  const [piError, setPiError] = useState<string | null>(null);
+  const [piPending, setPiPending] = useState(false);
+
+  const handlePiSignIn = async () => {
+    setPiError(null);
+    setPiPending(true);
+    try {
+      const user = await signInWithPi();
+      setPiUser(user);
+    } catch (e) {
+      setPiError(e instanceof Error ? e.message : "Pi sign-in failed");
+    } finally {
+      setPiPending(false);
+    }
+  };
+
+  useEffect(() => {
+    const cached = getCachedPiUser();
+    if (cached) {
+      setPiUser(cached);
+      return;
+    }
+    void handlePiSignIn();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const mutation = useMutation({
     mutationFn: (data: typeof DEFAULTS) => generate({ data }),
@@ -62,10 +91,33 @@ function Index() {
           <a href="#features" className="hover:text-foreground">Capabilities</a>
           <a href="#generator" className="hover:text-foreground">Draft contract</a>
         </nav>
-        <a href="#generator" className="rounded-sm border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary">
-          Launch
-        </a>
+        <div className="flex items-center gap-3">
+          {piUser ? (
+            <span className="rounded-sm border border-border px-3 py-2 text-xs text-muted-foreground">
+              π @{piUser.username}
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={handlePiSignIn}
+              disabled={piPending}
+              className="rounded-sm border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary disabled:opacity-50"
+            >
+              {piPending ? "Signing in…" : "Sign in with Pi"}
+            </button>
+          )}
+          <a href="#generator" className="rounded-sm bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90">
+            Launch
+          </a>
+        </div>
       </header>
+      {piError && (
+        <div className="mx-auto max-w-7xl px-6">
+          <p className="rounded-sm border border-destructive bg-destructive/10 px-3 py-2 text-xs text-destructive-foreground">
+            Pi sign-in: {piError} — open this app inside the Pi Browser to authenticate.
+          </p>
+        </div>
+      )}
 
       {/* HERO */}
       <section
