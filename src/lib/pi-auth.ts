@@ -75,12 +75,31 @@ async function ensureInit(): Promise<PiSdk> {
 
 import { approvePiPayment, completePiPayment } from "./pi-payments.functions";
 
+const TOKEN_KEY = "pi.accessToken";
+
+export function getCachedPiAccessToken(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return sessionStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function requireToken(): string {
+  const t = getCachedPiAccessToken();
+  if (!t) throw new Error("Not signed in with Pi");
+  return t;
+}
+
 async function handleIncompletePayment(payment: unknown) {
   const p = payment as { identifier?: string; transaction?: { txid?: string } } | null;
   if (!p?.identifier || !p.transaction?.txid) return;
   try {
+    const accessToken = getCachedPiAccessToken();
+    if (!accessToken) return;
     await completePiPayment({
-      data: { paymentId: p.identifier, txid: p.transaction.txid },
+      data: { paymentId: p.identifier, txid: p.transaction.txid, accessToken },
     });
   } catch (e) {
     console.error("Failed to complete incomplete Pi payment", e);
@@ -93,6 +112,11 @@ export async function signInWithPi(): Promise<PiUser> {
     ["username", "payments"],
     handleIncompletePayment,
   );
+  try {
+    sessionStorage.setItem(TOKEN_KEY, auth.accessToken);
+  } catch {
+    /* ignore */
+  }
   const verified = await verifyPiAccessToken({
     data: { accessToken: auth.accessToken },
   });
@@ -123,12 +147,13 @@ export async function payAppWithPi(
   payment: PiPaymentData,
 ): Promise<PiPaymentResult> {
   const Pi = await ensureInit();
+  const accessToken = requireToken();
   return new Promise<PiPaymentResult>((resolve, reject) => {
     let approvedId: string | null = null;
     Pi.createPayment(payment, {
       onReadyForServerApproval: async (paymentId) => {
         try {
-          await approvePiPayment({ data: { paymentId } });
+          await approvePiPayment({ data: { paymentId, accessToken } });
           approvedId = paymentId;
         } catch (e) {
           reject(e instanceof Error ? e : new Error("Server approval failed"));
@@ -136,7 +161,7 @@ export async function payAppWithPi(
       },
       onReadyForServerCompletion: async (paymentId, txid) => {
         try {
-          await completePiPayment({ data: { paymentId, txid } });
+          await completePiPayment({ data: { paymentId, txid, accessToken } });
           resolve({ paymentId, txid });
         } catch (e) {
           reject(e instanceof Error ? e : new Error("Server completion failed"));
