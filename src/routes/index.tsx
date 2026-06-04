@@ -331,6 +331,7 @@ function Index() {
           <p className="font-display italic">π · Trade without borders</p>
         </div>
       </footer>
+
     </main>
   );
 }
