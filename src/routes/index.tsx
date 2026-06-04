@@ -325,7 +325,6 @@ function Index() {
         </div>
       </section>
 
-      <footer className="mx-auto max-w-7xl px-6 py-10 text-xs text-muted-foreground">
       {/* PAY WITH PI */}
       <section id="pay" className="border-b border-border bg-card/30">
         <div className="mx-auto max-w-3xl px-6 py-20">
