@@ -326,6 +326,71 @@ function Index() {
       </section>
 
       <footer className="mx-auto max-w-7xl px-6 py-10 text-xs text-muted-foreground">
+      {/* PAY WITH PI */}
+      <section id="pay" className="border-b border-border bg-card/30">
+        <div className="mx-auto max-w-3xl px-6 py-20">
+          <p className="text-xs uppercase tracking-[0.18em] text-primary">In-app payment</p>
+          <h2 className="mt-2 font-display text-4xl md:text-5xl">Pay PiTrade in π</h2>
+          <p className="mt-3 max-w-xl text-sm text-muted-foreground">
+            Send Pi directly to PiTrade from the Pi Browser. The payment is approved and completed
+            server-side against the Pi Platform API.
+          </p>
+
+          <div className="mt-8 grid gap-4 rounded-sm border border-border bg-background p-6 md:grid-cols-[1fr_2fr_auto] md:items-end">
+            <div>
+              <label className="mb-2 block text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                Amount (π)
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={payAmount}
+                onChange={(e) => setPayAmount(e.target.value)}
+                className="w-full rounded-sm border border-border bg-input/40 px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                Memo
+              </label>
+              <input
+                type="text"
+                value={payMemo}
+                onChange={(e) => setPayMemo(e.target.value)}
+                maxLength={120}
+                className="w-full rounded-sm border border-border bg-input/40 px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handlePay}
+              disabled={payPending}
+              className="h-10 rounded-sm bg-primary px-6 text-sm font-medium text-primary-foreground shadow-[var(--shadow-elegant)] hover:opacity-90 disabled:opacity-50"
+            >
+              {payPending ? "Processing…" : `Pay π ${payAmount || "0"}`}
+            </button>
+          </div>
+
+          {payError && (
+            <div className="mt-4 rounded-sm border border-destructive bg-destructive/10 p-4 text-sm text-destructive-foreground">
+              {payError}
+            </div>
+          )}
+          {payReceipt && (
+            <div className="mt-4 rounded-sm border border-border bg-background p-4 text-sm">
+              <p className="font-display text-lg text-primary">Payment complete · π {payReceipt.amount}</p>
+              <p className="mt-1 break-all text-xs text-muted-foreground">paymentId: {payReceipt.paymentId}</p>
+              <p className="break-all text-xs text-muted-foreground">txid: {payReceipt.txid}</p>
+            </div>
+          )}
+          <p className="mt-4 text-xs text-muted-foreground">
+            Pi payments only run inside the Pi Browser with a signed-in Pi account.
+          </p>
+        </div>
+      </section>
+
+      <footer className="mx-auto max-w-7xl px-6 py-10 text-xs text-muted-foreground">
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-8">
           <p>© {new Date().getFullYear()} PiTrade — borderless commerce on the Pi Network.</p>
           <p className="font-display italic">π · Trade without borders</p>
