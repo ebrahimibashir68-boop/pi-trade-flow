@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState, type FormEvent } from "react";
 import heroGlobe from "@/assets/hero-globe.jpg";
 import { generateContract } from "@/lib/contract.functions";
-import { signInWithPi, getCachedPiUser } from "@/lib/pi-auth";
+import { signInWithPi, getCachedPiUser, payAppWithPi } from "@/lib/pi-auth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -39,6 +39,15 @@ function Index() {
   );
   const [piError, setPiError] = useState<string | null>(null);
   const [piPending, setPiPending] = useState(false);
+  const [payAmount, setPayAmount] = useState("1");
+  const [payMemo, setPayMemo] = useState("PiTrade contract drafting credit");
+  const [payPending, setPayPending] = useState(false);
+  const [payError, setPayError] = useState<string | null>(null);
+  const [payReceipt, setPayReceipt] = useState<{
+    paymentId: string;
+    txid: string;
+    amount: number;
+  } | null>(null);
 
   const handlePiSignIn = async () => {
     setPiError(null);
@@ -50,6 +59,39 @@ function Index() {
       setPiError(e instanceof Error ? e.message : "Pi sign-in failed");
     } finally {
       setPiPending(false);
+    }
+  };
+
+  const handlePay = async () => {
+    setPayError(null);
+    setPayReceipt(null);
+    const amount = Number(payAmount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setPayError("Enter an amount greater than 0 π");
+      return;
+    }
+    if (!piUser) {
+      try {
+        await handlePiSignIn();
+      } catch {
+        return;
+      }
+    }
+    setPayPending(true);
+    try {
+      const result = await payAppWithPi({
+        amount,
+        memo: payMemo || "PiTrade payment",
+        metadata: {
+          product: "pitrade.contract_credit",
+          username: getCachedPiUser()?.username ?? null,
+        },
+      });
+      setPayReceipt({ ...result, amount });
+    } catch (e) {
+      setPayError(e instanceof Error ? e.message : "Payment failed");
+    } finally {
+      setPayPending(false);
     }
   };
 
