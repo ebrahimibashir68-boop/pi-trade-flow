@@ -5,12 +5,30 @@ type PiAuthResult = {
   accessToken: string;
   user: { uid: string; username: string };
 };
+
+export type PiPaymentData = {
+  amount: number;
+  memo: string;
+  metadata: Record<string, unknown>;
+};
+
+export type PiPaymentCallbacks = {
+  onReadyForServerApproval: (paymentId: string) => void;
+  onReadyForServerCompletion: (paymentId: string, txid: string) => void;
+  onCancel: (paymentId: string) => void;
+  onError: (error: Error, payment?: unknown) => void;
+};
+
 type PiSdk = {
   init: (opts: { version: string; sandbox?: boolean }) => Promise<void> | void;
   authenticate: (
     scopes: string[],
     onIncompletePaymentFound: (payment: unknown) => void,
   ) => Promise<PiAuthResult>;
+  createPayment: (
+    payment: PiPaymentData,
+    callbacks: PiPaymentCallbacks,
+  ) => Promise<unknown>;
 };
 
 declare global {
@@ -55,11 +73,26 @@ async function ensureInit(): Promise<PiSdk> {
   return Pi;
 }
 
+import { approvePiPayment, completePiPayment } from "./pi-payments.functions";
+
+async function handleIncompletePayment(payment: unknown) {
+  const p = payment as { identifier?: string; transaction?: { txid?: string } } | null;
+  if (!p?.identifier || !p.transaction?.txid) return;
+  try {
+    await completePiPayment({
+      data: { paymentId: p.identifier, txid: p.transaction.txid },
+    });
+  } catch (e) {
+    console.error("Failed to complete incomplete Pi payment", e);
+  }
+}
+
 export async function signInWithPi(): Promise<PiUser> {
   const Pi = await ensureInit();
-  const auth = await Pi.authenticate(["username"], () => {
-    // No payment flow in this app; ignore incomplete payments.
-  });
+  const auth = await Pi.authenticate(
+    ["username", "payments"],
+    handleIncompletePayment,
+  );
   const verified = await verifyPiAccessToken({
     data: { accessToken: auth.accessToken },
   });
@@ -79,4 +112,44 @@ export function getCachedPiUser(): PiUser | null {
   } catch {
     return null;
   }
+}
+
+export type PiPaymentResult = {
+  paymentId: string;
+  txid: string;
+};
+
+export async function payAppWithPi(
+  payment: PiPaymentData,
+): Promise<PiPaymentResult> {
+  const Pi = await ensureInit();
+  return new Promise<PiPaymentResult>((resolve, reject) => {
+    let approvedId: string | null = null;
+    Pi.createPayment(payment, {
+      onReadyForServerApproval: async (paymentId) => {
+        try {
+          await approvePiPayment({ data: { paymentId } });
+          approvedId = paymentId;
+        } catch (e) {
+          reject(e instanceof Error ? e : new Error("Server approval failed"));
+        }
+      },
+      onReadyForServerCompletion: async (paymentId, txid) => {
+        try {
+          await completePiPayment({ data: { paymentId, txid } });
+          resolve({ paymentId, txid });
+        } catch (e) {
+          reject(e instanceof Error ? e : new Error("Server completion failed"));
+        }
+      },
+      onCancel: (paymentId) => {
+        reject(new Error(`Payment cancelled (${paymentId || approvedId || "n/a"})`));
+      },
+      onError: (error) => {
+        reject(error instanceof Error ? error : new Error(String(error)));
+      },
+    }).catch((e: unknown) => {
+      reject(e instanceof Error ? e : new Error(String(e)));
+    });
+  });
 }
