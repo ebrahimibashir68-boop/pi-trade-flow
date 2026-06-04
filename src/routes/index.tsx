@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState, type FormEvent } from "react";
 import heroGlobe from "@/assets/hero-globe.jpg";
 import { generateContract } from "@/lib/contract.functions";
-import { signInWithPi, getCachedPiUser, payAppWithPi } from "@/lib/pi-auth";
+import { signInWithPi, getCachedPiUser, payAppWithPi, getCachedPiAccessToken } from "@/lib/pi-auth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -106,7 +106,15 @@ function Index() {
   }, []);
 
   const mutation = useMutation({
-    mutationFn: (data: typeof DEFAULTS) => generate({ data }),
+    mutationFn: async (data: typeof DEFAULTS) => {
+      let accessToken = getCachedPiAccessToken();
+      if (!accessToken) {
+        await handlePiSignIn();
+        accessToken = getCachedPiAccessToken();
+      }
+      if (!accessToken) throw new Error("Please sign in with Pi to generate contracts.");
+      return generate({ data: { ...data, accessToken } });
+    },
   });
 
   const onSubmit = (e: FormEvent) => {

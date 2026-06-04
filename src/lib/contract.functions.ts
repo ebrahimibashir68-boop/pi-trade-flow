@@ -3,6 +3,7 @@ import { generateText } from "ai";
 import { z } from "zod";
 
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
+import { verifyPiToken } from "./pi-auth.functions";
 
 const ContractInput = z.object({
   commodity: z.string().min(1).max(200),
@@ -15,11 +16,18 @@ const ContractInput = z.object({
   priceInPi: z.string().min(1).max(80),
   deliveryWindow: z.string().min(1).max(120),
   notes: z.string().max(2000).optional().default(""),
+  accessToken: z.string().min(10).max(4000),
 });
 
 export const generateContract = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => ContractInput.parse(input))
   .handler(async ({ data }) => {
+    try {
+      await verifyPiToken(data.accessToken);
+    } catch (e) {
+      console.error("generateContract auth failed", e);
+      throw new Error("Please sign in with Pi to generate contracts.");
+    }
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("Missing LOVABLE_API_KEY");
 
@@ -66,12 +74,13 @@ Be concrete, legally credible, and concise. Do not invent counterparties beyond 
       return { contract: text };
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "AI request failed";
+      console.error("generateContract AI gateway error:", err);
       if (message.includes("429")) {
         throw new Error("Rate limit reached. Please wait a moment and try again.");
       }
       if (message.includes("402")) {
         throw new Error("AI credits exhausted. Add credits in your Lovable workspace billing.");
       }
-      throw new Error(message);
+      throw new Error("Contract generation failed. Please try again.");
     }
   });
