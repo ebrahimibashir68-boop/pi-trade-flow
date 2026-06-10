@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pi-trade-flow.lovable.app/sitemap.xml
