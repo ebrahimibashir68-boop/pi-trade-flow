@@ -1,0 +1,9 @@
+# PiTrade
+
+> AI-drafted borderless import & export smart contracts settled in Pi (π).
+
+PiTrade generates legally-credible international trade contracts for any commodity, denominated in π and escrowed on the Pi Network. It covers Incoterms 2020, customs and compliance checks, and Pi DAO arbitration.
+
+## Pages
+
+- [Home](/): Overview, capabilities, AI contract generator, and in-app Pi payment.
