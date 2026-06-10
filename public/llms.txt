@@ -7,3 +7,7 @@ PiTrade generates legally-credible international trade contracts for any commodi
 ## Pages
 
 - [Home](/): Overview, capabilities, AI contract generator, and in-app Pi payment.
+
+## Guides
+
+- [Incoterms 2020 Guide](/blog/incoterms-2020-guide): FCA, CIF and FOB explained for Pi-settled trade contracts.

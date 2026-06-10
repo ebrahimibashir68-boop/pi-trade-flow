@@ -243,6 +243,8 @@ function Index() {
               alt="Global trade network settling in Pi"
               width={1600}
               height={1200}
+              fetchPriority="high"
+              decoding="async"
               className="rounded-sm border border-border shadow-[var(--shadow-elegant)]"
             />
           </div>
