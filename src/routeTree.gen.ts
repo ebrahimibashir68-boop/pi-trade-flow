@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogIncoterms2020GuideRouteImport } from './routes/blog.incoterms-2020-guide'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -28,34 +29,48 @@ const BlogIncoterms2020GuideRoute = BlogIncoterms2020GuideRouteImport.update({
   path: '/blog/incoterms-2020-guide',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/chat': typeof ApiChatRoute
   '/blog/incoterms-2020-guide': typeof BlogIncoterms2020GuideRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/chat': typeof ApiChatRoute
   '/blog/incoterms-2020-guide': typeof BlogIncoterms2020GuideRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/chat': typeof ApiChatRoute
   '/blog/incoterms-2020-guide': typeof BlogIncoterms2020GuideRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sitemap.xml' | '/blog/incoterms-2020-guide'
+  fullPaths: '/' | '/sitemap.xml' | '/api/chat' | '/blog/incoterms-2020-guide'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sitemap.xml' | '/blog/incoterms-2020-guide'
-  id: '__root__' | '/' | '/sitemap.xml' | '/blog/incoterms-2020-guide'
+  to: '/' | '/sitemap.xml' | '/api/chat' | '/blog/incoterms-2020-guide'
+  id:
+    | '__root__'
+    | '/'
+    | '/sitemap.xml'
+    | '/api/chat'
+    | '/blog/incoterms-2020-guide'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiChatRoute: typeof ApiChatRoute
   BlogIncoterms2020GuideRoute: typeof BlogIncoterms2020GuideRoute
 }
 
@@ -82,12 +97,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogIncoterms2020GuideRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiChatRoute: ApiChatRoute,
   BlogIncoterms2020GuideRoute: BlogIncoterms2020GuideRoute,
 }
 export const routeTree = rootRouteImport
