@@ -5,6 +5,7 @@ import { useEffect, useId, useState, type FormEvent } from "react";
 import heroGlobe from "@/assets/hero-globe.jpg";
 import { generateContract } from "@/lib/contract.functions";
 import { signInWithPi, getCachedPiUser, payAppWithPi, getCachedPiAccessToken } from "@/lib/pi-auth";
+import { ChatBot } from "@/components/ChatBot";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -406,6 +407,7 @@ function Index() {
         </div>
       </footer>
 
+      <ChatBot />
     </main>
   );
 }
