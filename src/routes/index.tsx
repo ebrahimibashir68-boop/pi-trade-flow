@@ -6,6 +6,7 @@ import heroGlobe from "@/assets/hero-globe.jpg";
 import { generateContract } from "@/lib/contract.functions";
 import { signInWithPi, getCachedPiUser, payAppWithPi, getCachedPiAccessToken } from "@/lib/pi-auth";
 import { ChatBot } from "@/components/ChatBot";
+import { SettingsMenu } from "@/components/SettingsMenu";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -188,6 +189,7 @@ function Index() {
               {piPending ? "Signing in…" : "Sign in with Pi"}
             </button>
           )}
+          <SettingsMenu piUser={piUser} onPiUserChange={setPiUser} />
           <a href="#generator" className="rounded-sm bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90">
             Launch
           </a>
