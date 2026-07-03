@@ -151,3 +151,12 @@
     color: var(--color-foreground);
   }
 }
+
+/* Settings: Desktop site + high contrast */
+html.desktop-site body {
+  min-width: 1280px;
+}
+html.high-contrast {
+  --color-muted-foreground: var(--color-foreground);
+  --color-border: var(--color-foreground);
+}
