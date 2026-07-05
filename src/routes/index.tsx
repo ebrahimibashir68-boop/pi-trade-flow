@@ -5,6 +5,7 @@ import { useEffect, useId, useState, type FormEvent } from "react";
 import heroGlobe from "@/assets/hero-globe.jpg";
 import { generateContract } from "@/lib/contract.functions";
 import { signInWithPi, getCachedPiUser, payAppWithPi, getCachedPiAccessToken } from "@/lib/pi-auth";
+import { showInterstitialAd, showRewardedAd } from "@/lib/pi-ads";
 import { ChatBot } from "@/components/ChatBot";
 import { SettingsMenu } from "@/components/SettingsMenu";
 
@@ -149,6 +150,37 @@ function Index() {
       return generate({ data: { ...data, accessToken } });
     },
   });
+
+  const [adState, setAdState] = useState<{
+    status: "idle" | "loading" | "success" | "error";
+    message?: string;
+  }>({ status: "idle" });
+
+  const runInterstitial = async () => {
+    setAdState({ status: "loading", message: "Loading interstitial…" });
+    try {
+      await showInterstitialAd();
+      setAdState({ status: "success", message: "Thanks for the support!" });
+    } catch (e) {
+      setAdState({ status: "error", message: e instanceof Error ? e.message : "Ad failed" });
+    }
+  };
+
+  const runRewarded = async () => {
+    setAdState({ status: "loading", message: "Loading rewarded ad…" });
+    try {
+      if (!getCachedPiAccessToken()) await handlePiSignIn();
+      const r = await showRewardedAd();
+      setAdState({
+        status: "success",
+        message: r.verified
+          ? "Reward verified on the Pi network — +1 free contract draft credit."
+          : "Ad watched. Reward pending verification.",
+      });
+    } catch (e) {
+      setAdState({ status: "error", message: e instanceof Error ? e.message : "Ad failed" });
+    }
+  };
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -398,6 +430,47 @@ function Index() {
           )}
           <p className="mt-4 text-xs text-muted-foreground">
             Pi payments only run inside the Pi Browser with a signed-in Pi account.
+          </p>
+        </div>
+      </section>
+
+      <section id="support" className="border-b border-border">
+        <div className="mx-auto max-w-3xl px-6 py-16">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Support PiTrade</p>
+          <h2 className="mt-3 font-display text-3xl md:text-4xl">Fuel new features with Pi Ads</h2>
+          <p className="mt-3 text-sm text-muted-foreground">
+            Watch an ad from the Pi Ad Network to help fund development. Rewarded ads unlock a free
+            contract draft credit and are verified on-chain via the Pi Platform API.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={runInterstitial}
+              disabled={adState.status === "loading"}
+              className="rounded-sm border border-border px-4 py-2 text-sm hover:bg-card disabled:opacity-50"
+            >
+              Show interstitial ad
+            </button>
+            <button
+              type="button"
+              onClick={runRewarded}
+              disabled={adState.status === "loading"}
+              className="rounded-sm bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90 disabled:opacity-50"
+            >
+              Watch rewarded ad · +1 credit
+            </button>
+          </div>
+          {adState.message && (
+            <p
+              className={`mt-4 text-xs ${
+                adState.status === "error" ? "text-destructive" : "text-muted-foreground"
+              }`}
+            >
+              {adState.message}
+            </p>
+          )}
+          <p className="mt-4 text-xs text-muted-foreground">
+            Ads only render inside the Pi Browser with the Pi Ad Network enabled for this app.
           </p>
         </div>
       </section>
