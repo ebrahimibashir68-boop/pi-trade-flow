@@ -435,6 +435,8 @@ function Index() {
       </section>
 
       <footer className="mx-auto max-w-7xl px-6 py-10 text-xs text-muted-foreground">
+      </section>
+      {/* placeholder to avoid stray tag; replaced below */}
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-8">
           <p>© {new Date().getFullYear()} PiTrade — borderless commerce on the Pi Network.</p>
           <p className="font-display italic">π · Trade without borders</p>
