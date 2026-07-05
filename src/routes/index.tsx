@@ -151,6 +151,37 @@ function Index() {
     },
   });
 
+  const [adState, setAdState] = useState<{
+    status: "idle" | "loading" | "success" | "error";
+    message?: string;
+  }>({ status: "idle" });
+
+  const runInterstitial = async () => {
+    setAdState({ status: "loading", message: "Loading interstitial…" });
+    try {
+      await showInterstitialAd();
+      setAdState({ status: "success", message: "Thanks for the support!" });
+    } catch (e) {
+      setAdState({ status: "error", message: e instanceof Error ? e.message : "Ad failed" });
+    }
+  };
+
+  const runRewarded = async () => {
+    setAdState({ status: "loading", message: "Loading rewarded ad…" });
+    try {
+      if (!getCachedPiAccessToken()) await handlePiSignIn();
+      const r = await showRewardedAd();
+      setAdState({
+        status: "success",
+        message: r.verified
+          ? "Reward verified on the Pi network — +1 free contract draft credit."
+          : "Ad watched. Reward pending verification.",
+      });
+    } catch (e) {
+      setAdState({ status: "error", message: e instanceof Error ? e.message : "Ad failed" });
+    }
+  };
+
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     mutation.mutate(form);
