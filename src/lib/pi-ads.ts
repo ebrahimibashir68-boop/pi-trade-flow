@@ -18,12 +18,6 @@ type PiAds = {
 
 type PiSdkWithAds = { Ads?: PiAds };
 
-declare global {
-  interface Window {
-    Pi?: Window["Pi"] & PiSdkWithAds;
-  }
-}
-
 function getAds(): PiAds {
   if (typeof window === "undefined") throw new Error("Pi SDK only available in browser");
   const ads = (window.Pi as unknown as PiSdkWithAds | undefined)?.Ads;
