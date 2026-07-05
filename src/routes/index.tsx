@@ -5,6 +5,7 @@ import { useEffect, useId, useState, type FormEvent } from "react";
 import heroGlobe from "@/assets/hero-globe.jpg";
 import { generateContract } from "@/lib/contract.functions";
 import { signInWithPi, getCachedPiUser, payAppWithPi, getCachedPiAccessToken } from "@/lib/pi-auth";
+import { showInterstitialAd, showRewardedAd } from "@/lib/pi-ads";
 import { ChatBot } from "@/components/ChatBot";
 import { SettingsMenu } from "@/components/SettingsMenu";
 
