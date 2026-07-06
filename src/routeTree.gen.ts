@@ -16,6 +16,7 @@ import { Route as BlogIncoterms2020GuideRouteImport } from './routes/blog.incote
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as ApiPublicPiverifyWebhookRouteImport } from './routes/api/public/piverify-webhook'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -55,6 +56,12 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicPiverifyWebhookRoute =
+  ApiPublicPiverifyWebhookRouteImport.update({
+    id: '/api/public/piverify-webhook',
+    path: '/api/public/piverify-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -71,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/blog/incoterms-2020-guide': typeof BlogIncoterms2020GuideRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/public/piverify-webhook': typeof ApiPublicPiverifyWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -81,6 +89,7 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/blog/incoterms-2020-guide': typeof BlogIncoterms2020GuideRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/public/piverify-webhook': typeof ApiPublicPiverifyWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -92,6 +101,7 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/blog/incoterms-2020-guide': typeof BlogIncoterms2020GuideRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/public/piverify-webhook': typeof ApiPublicPiverifyWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -104,6 +114,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/blog/incoterms-2020-guide'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/public/piverify-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -114,6 +125,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/blog/incoterms-2020-guide'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/public/piverify-webhook'
   id:
     | '__root__'
     | '/'
@@ -124,6 +136,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/blog/incoterms-2020-guide'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/public/piverify-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -135,6 +148,7 @@ export interface RootRouteChildren {
   ApiChatRoute: typeof ApiChatRoute
   BlogIncoterms2020GuideRoute: typeof BlogIncoterms2020GuideRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  ApiPublicPiverifyWebhookRoute: typeof ApiPublicPiverifyWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -188,6 +202,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/piverify-webhook': {
+      id: '/api/public/piverify-webhook'
+      path: '/api/public/piverify-webhook'
+      fullPath: '/api/public/piverify-webhook'
+      preLoaderRoute: typeof ApiPublicPiverifyWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.mcp/invoke-tool/$tool': {
       id: '/.mcp/invoke-tool/$tool'
       path: '/.mcp/invoke-tool/$tool'
@@ -208,6 +229,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiChatRoute: ApiChatRoute,
   BlogIncoterms2020GuideRoute: BlogIncoterms2020GuideRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  ApiPublicPiverifyWebhookRoute: ApiPublicPiverifyWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

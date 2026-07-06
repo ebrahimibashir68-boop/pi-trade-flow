@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Settings, Monitor, Smartphone, Wallet, Type, Contrast, RotateCcw, ExternalLink, Check } from "lucide-react";
+import { Settings, Monitor, Smartphone, Wallet, Type, Contrast, RotateCcw, ExternalLink, Check, ShieldCheck } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,7 +9,8 @@ import {
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
-import { signInWithPi, getCachedPiUser } from "@/lib/pi-auth";
+import { signInWithPi, getCachedPiUser, getCachedPiAccessToken } from "@/lib/pi-auth";
+import { createKycSession } from "@/lib/piverify.functions";
 
 type PiUser = { uid: string; username: string };
 
@@ -53,6 +54,8 @@ export function SettingsMenu({
   const [textSize, setTextSizeState] = useState<"sm" | "md" | "lg">("md");
   const [walletPending, setWalletPending] = useState(false);
   const [walletError, setWalletError] = useState<string | null>(null);
+  const [kycPending, setKycPending] = useState(false);
+  const [kycError, setKycError] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -123,6 +126,26 @@ export function SettingsMenu({
     onPiUserChange(null);
   };
 
+  const startKyc = async () => {
+    setKycError(null);
+    const accessToken = getCachedPiAccessToken();
+    if (!accessToken) {
+      setKycError("Connect your Pi wallet first.");
+      return;
+    }
+    setKycPending(true);
+    try {
+      const session = await createKycSession({ data: { accessToken } });
+      if (typeof window !== "undefined" && session.hosted_flow_url) {
+        window.open(session.hosted_flow_url, "_blank", "noopener,noreferrer");
+      }
+    } catch (e) {
+      setKycError(e instanceof Error ? e.message : "Could not start verification.");
+    } finally {
+      setKycPending(false);
+    }
+  };
+
   const resetAll = () => {
     toggleDesktop(false);
     toggleContrast(false);
@@ -183,6 +206,27 @@ export function SettingsMenu({
           <div className="px-2 py-1 text-[11px] text-destructive">
             {walletError}
           </div>
+        )}
+
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel>Identity</DropdownMenuLabel>
+        <DropdownMenuItem
+          onSelect={(e) => {
+            e.preventDefault();
+            void startKyc();
+          }}
+          disabled={kycPending || !piUser}
+        >
+          <ShieldCheck className="h-4 w-4" />
+          {kycPending ? "Starting verification…" : "Verify identity (PiVerify)"}
+        </DropdownMenuItem>
+        {!piUser && (
+          <div className="px-2 py-1 text-[11px] text-muted-foreground">
+            Connect your Pi wallet to verify.
+          </div>
+        )}
+        {kycError && (
+          <div className="px-2 py-1 text-[11px] text-destructive">{kycError}</div>
         )}
 
         <DropdownMenuSeparator />
