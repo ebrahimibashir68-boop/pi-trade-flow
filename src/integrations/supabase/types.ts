@@ -14,7 +14,234 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contract_compliance: {
+        Row: {
+          contract_id: string | null
+          created_at: string
+          id: string
+          kind: Database["public"]["Enums"]["compliance_kind"]
+          payload: Json
+        }
+        Insert: {
+          contract_id?: string | null
+          created_at?: string
+          id?: string
+          kind: Database["public"]["Enums"]["compliance_kind"]
+          payload: Json
+        }
+        Update: {
+          contract_id?: string | null
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["compliance_kind"]
+          payload?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_compliance_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contract_parties: {
+        Row: {
+          contract_id: string
+          country: string
+          created_at: string
+          email: string | null
+          id: string
+          identifier: string | null
+          invited_at: string | null
+          joined_uid: string | null
+          name: string
+          party_type: Database["public"]["Enums"]["party_type"]
+          pi_username: string | null
+          role: Database["public"]["Enums"]["party_role"]
+        }
+        Insert: {
+          contract_id: string
+          country: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          identifier?: string | null
+          invited_at?: string | null
+          joined_uid?: string | null
+          name: string
+          party_type: Database["public"]["Enums"]["party_type"]
+          pi_username?: string | null
+          role: Database["public"]["Enums"]["party_role"]
+        }
+        Update: {
+          contract_id?: string
+          country?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          identifier?: string | null
+          invited_at?: string | null
+          joined_uid?: string | null
+          name?: string
+          party_type?: Database["public"]["Enums"]["party_type"]
+          pi_username?: string | null
+          role?: Database["public"]["Enums"]["party_role"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_parties_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contract_signatures: {
+        Row: {
+          contract_id: string
+          id: string
+          ip: string | null
+          method: Database["public"]["Enums"]["sig_method"]
+          party_id: string
+          signature_image: string | null
+          signed_at: string
+          signed_hash: string
+          signer_uid: string
+          signer_username: string | null
+          typed_name: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          contract_id: string
+          id?: string
+          ip?: string | null
+          method: Database["public"]["Enums"]["sig_method"]
+          party_id: string
+          signature_image?: string | null
+          signed_at?: string
+          signed_hash: string
+          signer_uid: string
+          signer_username?: string | null
+          typed_name?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          contract_id?: string
+          id?: string
+          ip?: string | null
+          method?: Database["public"]["Enums"]["sig_method"]
+          party_id?: string
+          signature_image?: string | null
+          signed_at?: string
+          signed_hash?: string
+          signer_uid?: string
+          signer_username?: string | null
+          typed_name?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_signatures_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contract_signatures_party_id_fkey"
+            columns: ["party_id"]
+            isOneToOne: false
+            referencedRelation: "contract_parties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contract_translations: {
+        Row: {
+          body_markdown: string
+          contract_id: string
+          created_at: string
+          id: string
+          lang: string
+        }
+        Insert: {
+          body_markdown: string
+          contract_id: string
+          created_at?: string
+          id?: string
+          lang: string
+        }
+        Update: {
+          body_markdown?: string
+          contract_id?: string
+          created_at?: string
+          id?: string
+          lang?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_translations_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contracts: {
+        Row: {
+          author_uid: string
+          author_username: string | null
+          body_markdown: string
+          commodity: string
+          content_hash: string
+          created_at: string
+          delivery_window: string
+          id: string
+          incoterm: string
+          notes: string | null
+          price_pi: string
+          quantity: string
+          status: Database["public"]["Enums"]["contract_status"]
+          updated_at: string
+        }
+        Insert: {
+          author_uid: string
+          author_username?: string | null
+          body_markdown?: string
+          commodity: string
+          content_hash?: string
+          created_at?: string
+          delivery_window: string
+          id?: string
+          incoterm: string
+          notes?: string | null
+          price_pi: string
+          quantity: string
+          status?: Database["public"]["Enums"]["contract_status"]
+          updated_at?: string
+        }
+        Update: {
+          author_uid?: string
+          author_username?: string | null
+          body_markdown?: string
+          commodity?: string
+          content_hash?: string
+          created_at?: string
+          delivery_window?: string
+          id?: string
+          incoterm?: string
+          notes?: string | null
+          price_pi?: string
+          quantity?: string
+          status?: Database["public"]["Enums"]["contract_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +250,16 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      compliance_kind: "hs" | "sanctions" | "docs"
+      contract_status:
+        | "draft"
+        | "awaiting_signatures"
+        | "signed"
+        | "executed"
+        | "cancelled"
+      party_role: "exporter" | "importer" | "witness"
+      party_type: "individual" | "company" | "government"
+      sig_method: "pi" | "typed" | "drawn"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +386,18 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      compliance_kind: ["hs", "sanctions", "docs"],
+      contract_status: [
+        "draft",
+        "awaiting_signatures",
+        "signed",
+        "executed",
+        "cancelled",
+      ],
+      party_role: ["exporter", "importer", "witness"],
+      party_type: ["individual", "company", "government"],
+      sig_method: ["pi", "typed", "drawn"],
+    },
   },
 } as const
