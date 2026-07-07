@@ -8,6 +8,7 @@ import { signInWithPi, getCachedPiUser, payAppWithPi, getCachedPiAccessToken } f
 import { showInterstitialAd, showRewardedAd } from "@/lib/pi-ads";
 import { ChatBot } from "@/components/ChatBot";
 import { SettingsMenu } from "@/components/SettingsMenu";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -204,7 +205,8 @@ function Index() {
         <nav className="hidden gap-8 text-sm text-muted-foreground md:flex">
           <a href="#how" className="hover:text-foreground">How it works</a>
           <a href="#features" className="hover:text-foreground">Capabilities</a>
-          <a href="#generator" className="hover:text-foreground">Draft contract</a>
+          <Link to="/contracts/new" className="hover:text-foreground">Draft contract</Link>
+          <Link to="/contracts" className="hover:text-foreground">My contracts</Link>
         </nav>
         <div className="flex items-center gap-3">
           {piUser ? (
