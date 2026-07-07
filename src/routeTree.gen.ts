@@ -14,6 +14,7 @@ import { Route as McpRouteImport } from './routes/mcp'
 import { Route as ContractsRouteImport } from './routes/contracts'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ContractsIndexRouteImport } from './routes/contracts.index'
+import { Route as ContractsNewRouteImport } from './routes/contracts.new'
 import { Route as BlogIncoterms2020GuideRouteImport } from './routes/blog.incoterms-2020-guide'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -44,6 +45,11 @@ const IndexRoute = IndexRouteImport.update({
 const ContractsIndexRoute = ContractsIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => ContractsRoute,
+} as any)
+const ContractsNewRoute = ContractsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
   getParentRoute: () => ContractsRoute,
 } as any)
 const BlogIncoterms2020GuideRoute = BlogIncoterms2020GuideRouteImport.update({
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/incoterms-2020-guide': typeof BlogIncoterms2020GuideRoute
+  '/contracts/new': typeof ContractsNewRoute
   '/contracts/': typeof ContractsIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/piverify-webhook': typeof ApiPublicPiverifyWebhookRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/incoterms-2020-guide': typeof BlogIncoterms2020GuideRoute
+  '/contracts/new': typeof ContractsNewRoute
   '/contracts': typeof ContractsIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/piverify-webhook': typeof ApiPublicPiverifyWebhookRoute
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/incoterms-2020-guide': typeof BlogIncoterms2020GuideRoute
+  '/contracts/new': typeof ContractsNewRoute
   '/contracts/': typeof ContractsIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/piverify-webhook': typeof ApiPublicPiverifyWebhookRoute
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/api/chat'
     | '/blog/incoterms-2020-guide'
+    | '/contracts/new'
     | '/contracts/'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/piverify-webhook'
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/api/chat'
     | '/blog/incoterms-2020-guide'
+    | '/contracts/new'
     | '/contracts'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/piverify-webhook'
@@ -156,6 +167,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/api/chat'
     | '/blog/incoterms-2020-guide'
+    | '/contracts/new'
     | '/contracts/'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/piverify-webhook'
@@ -211,6 +223,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContractsIndexRouteImport
       parentRoute: typeof ContractsRoute
     }
+    '/contracts/new': {
+      id: '/contracts/new'
+      path: '/new'
+      fullPath: '/contracts/new'
+      preLoaderRoute: typeof ContractsNewRouteImport
+      parentRoute: typeof ContractsRoute
+    }
     '/blog/incoterms-2020-guide': {
       id: '/blog/incoterms-2020-guide'
       path: '/blog/incoterms-2020-guide'
@@ -257,10 +276,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface ContractsRouteChildren {
+  ContractsNewRoute: typeof ContractsNewRoute
   ContractsIndexRoute: typeof ContractsIndexRoute
 }
 
 const ContractsRouteChildren: ContractsRouteChildren = {
+  ContractsNewRoute: ContractsNewRoute,
   ContractsIndexRoute: ContractsIndexRoute,
 }
 
