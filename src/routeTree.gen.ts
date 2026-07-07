@@ -15,6 +15,7 @@ import { Route as ContractsRouteImport } from './routes/contracts'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ContractsIndexRouteImport } from './routes/contracts.index'
 import { Route as ContractsNewRouteImport } from './routes/contracts.new'
+import { Route as ContractsIdRouteImport } from './routes/contracts.$id'
 import { Route as BlogIncoterms2020GuideRouteImport } from './routes/blog.incoterms-2020-guide'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -50,6 +51,11 @@ const ContractsIndexRoute = ContractsIndexRouteImport.update({
 const ContractsNewRoute = ContractsNewRouteImport.update({
   id: '/new',
   path: '/new',
+  getParentRoute: () => ContractsRoute,
+} as any)
+const ContractsIdRoute = ContractsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
   getParentRoute: () => ContractsRoute,
 } as any)
 const BlogIncoterms2020GuideRoute = BlogIncoterms2020GuideRouteImport.update({
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/incoterms-2020-guide': typeof BlogIncoterms2020GuideRoute
+  '/contracts/$id': typeof ContractsIdRoute
   '/contracts/new': typeof ContractsNewRoute
   '/contracts/': typeof ContractsIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/incoterms-2020-guide': typeof BlogIncoterms2020GuideRoute
+  '/contracts/$id': typeof ContractsIdRoute
   '/contracts/new': typeof ContractsNewRoute
   '/contracts': typeof ContractsIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/incoterms-2020-guide': typeof BlogIncoterms2020GuideRoute
+  '/contracts/$id': typeof ContractsIdRoute
   '/contracts/new': typeof ContractsNewRoute
   '/contracts/': typeof ContractsIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/api/chat'
     | '/blog/incoterms-2020-guide'
+    | '/contracts/$id'
     | '/contracts/new'
     | '/contracts/'
     | '/.mcp/invoke-tool/$tool'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/api/chat'
     | '/blog/incoterms-2020-guide'
+    | '/contracts/$id'
     | '/contracts/new'
     | '/contracts'
     | '/.mcp/invoke-tool/$tool'
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/api/chat'
     | '/blog/incoterms-2020-guide'
+    | '/contracts/$id'
     | '/contracts/new'
     | '/contracts/'
     | '/.mcp/invoke-tool/$tool'
@@ -230,6 +242,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContractsNewRouteImport
       parentRoute: typeof ContractsRoute
     }
+    '/contracts/$id': {
+      id: '/contracts/$id'
+      path: '/$id'
+      fullPath: '/contracts/$id'
+      preLoaderRoute: typeof ContractsIdRouteImport
+      parentRoute: typeof ContractsRoute
+    }
     '/blog/incoterms-2020-guide': {
       id: '/blog/incoterms-2020-guide'
       path: '/blog/incoterms-2020-guide'
@@ -276,11 +295,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface ContractsRouteChildren {
+  ContractsIdRoute: typeof ContractsIdRoute
   ContractsNewRoute: typeof ContractsNewRoute
   ContractsIndexRoute: typeof ContractsIndexRoute
 }
 
 const ContractsRouteChildren: ContractsRouteChildren = {
+  ContractsIdRoute: ContractsIdRoute,
   ContractsNewRoute: ContractsNewRoute,
   ContractsIndexRoute: ContractsIndexRoute,
 }
