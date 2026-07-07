@@ -13,6 +13,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as ContractsRouteImport } from './routes/contracts'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ContractsIndexRouteImport } from './routes/contracts.index'
 import { Route as BlogIncoterms2020GuideRouteImport } from './routes/blog.incoterms-2020-guide'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -39,6 +40,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ContractsIndexRoute = ContractsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ContractsRoute,
 } as any)
 const BlogIncoterms2020GuideRoute = BlogIncoterms2020GuideRouteImport.update({
   id: '/blog/incoterms-2020-guide',
@@ -77,38 +83,40 @@ const Char91DotmcpChar93InvokeToolToolRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/contracts': typeof ContractsRoute
+  '/contracts': typeof ContractsRouteWithChildren
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/incoterms-2020-guide': typeof BlogIncoterms2020GuideRoute
+  '/contracts/': typeof ContractsIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/piverify-webhook': typeof ApiPublicPiverifyWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/contracts': typeof ContractsRoute
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/incoterms-2020-guide': typeof BlogIncoterms2020GuideRoute
+  '/contracts': typeof ContractsIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/piverify-webhook': typeof ApiPublicPiverifyWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/contracts': typeof ContractsRoute
+  '/contracts': typeof ContractsRouteWithChildren
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/incoterms-2020-guide': typeof BlogIncoterms2020GuideRoute
+  '/contracts/': typeof ContractsIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/piverify-webhook': typeof ApiPublicPiverifyWebhookRoute
 }
@@ -123,18 +131,19 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/api/chat'
     | '/blog/incoterms-2020-guide'
+    | '/contracts/'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/piverify-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/contracts'
     | '/mcp'
     | '/sitemap.xml'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/api/chat'
     | '/blog/incoterms-2020-guide'
+    | '/contracts'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/piverify-webhook'
   id:
@@ -147,13 +156,14 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/api/chat'
     | '/blog/incoterms-2020-guide'
+    | '/contracts/'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/piverify-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ContractsRoute: typeof ContractsRoute
+  ContractsRoute: typeof ContractsRouteWithChildren
   McpRoute: typeof McpRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
@@ -193,6 +203,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/contracts/': {
+      id: '/contracts/'
+      path: '/'
+      fullPath: '/contracts/'
+      preLoaderRoute: typeof ContractsIndexRouteImport
+      parentRoute: typeof ContractsRoute
     }
     '/blog/incoterms-2020-guide': {
       id: '/blog/incoterms-2020-guide'
@@ -239,9 +256,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ContractsRouteChildren {
+  ContractsIndexRoute: typeof ContractsIndexRoute
+}
+
+const ContractsRouteChildren: ContractsRouteChildren = {
+  ContractsIndexRoute: ContractsIndexRoute,
+}
+
+const ContractsRouteWithChildren = ContractsRoute._addFileChildren(
+  ContractsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ContractsRoute: ContractsRoute,
+  ContractsRoute: ContractsRouteWithChildren,
   McpRoute: McpRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
